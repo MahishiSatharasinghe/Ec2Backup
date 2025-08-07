@@ -26,3 +26,15 @@ spec:
               value: "root"
             - name: DB_NAME
               value: "orderdb"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+spec:
+  selector:
+    app: order-service
+  ports:
+    - port: 8002
+      targetPort: 8002
+  type: NodePort
