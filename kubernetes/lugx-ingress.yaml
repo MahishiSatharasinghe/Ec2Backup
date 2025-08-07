@@ -1,0 +1,64 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lugx-ingress
+  annotations:
+    traefik.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: lugx.local
+      http:
+        paths:
+          # ✅ Frontend
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+
+          # ✅ Game Service
+          - path: /games(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: game-service
+                port:
+                  number: 8001
+
+          - path: /docs(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: game-service
+                port:
+                  number: 8001
+
+          - path: /openapi.json(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: game-service
+                port:
+                  number: 8001
+
+          # ✅ Order Service
+          - path: /orders(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 8002
+
+          # ✅ Analytics Service
+          - path: /analytics(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: analytics-service
+                port:
+                  number: 8003
+
