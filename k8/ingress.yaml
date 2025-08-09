@@ -3,16 +3,27 @@ kind: Ingress
 metadata:
   name: lugx-ingress
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # Rewrites /games/foo -> /foo for the backend service
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend
-            port:
-              number: 80
+    - http:
+        paths:
+          # Frontend at root
+          - path: /(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+          # Game-service under /games (strip the prefix for the backend)
+          - path: /games(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: game-service
+                port:
+                  number: 8001
